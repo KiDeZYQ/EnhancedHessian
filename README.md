@@ -1,2 +1,2 @@
 # Enhanced-Hessian
-一个底层的支持hessian安全认证的扩展
+一个对hessian做各种底层增强的插件
