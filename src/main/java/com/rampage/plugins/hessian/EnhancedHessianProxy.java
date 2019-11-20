@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.security.Key;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
@@ -22,6 +24,7 @@ import com.caucho.hessian.client.SecurityHessianConnection;
 import com.caucho.hessian.io.AbstractHessianOutput;
 import com.rampage.plugins.hessian.model.SecurityHessianConfig;
 import com.rampage.plugins.util.HessianAuthUtils;
+import com.rampage.plugins.util.TransmittableContext;
 
 
 /**
@@ -151,5 +154,17 @@ public class EnhancedHessianProxy extends HessianProxy  {
 			return new InflaterInputStream((InputStream) conn.getInputStream(), new Inflater(true));
 		}
 		return conn.getInputStream();
+	}
+	
+	@Override
+	protected void addRequestHeaders(HessianConnection conn) {
+		super.addRequestHeaders(conn);
+		// 将上下文信息放入请求头
+		Map<String, String> context = TransmittableContext.getCurrentContext();
+		if (context != null) {
+			for (Entry<String, String> entry : context.entrySet()) {
+				conn.addHeader(entry.getKey(), entry.getValue());
+			}
+		}
 	}
 }
